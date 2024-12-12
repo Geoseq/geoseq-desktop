@@ -2,6 +2,9 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
+import "./index.css"
+import Map from 'react-map-gl/maplibre';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -13,38 +16,46 @@ function App() {
   }
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="h-screen flex flex-col">
+      <header className="bg-gray-800 text-white p-2">菜单栏</header>
+      <div className="flex flex-1">
+        <div className="w-1/6 bg-gray-100 p-2">图层面板</div>
+        <main className="flex-1 relative">
+          <div id="map" className="absolute inset-0">
+            <Map
+              initialViewState={{
+                longitude: 120,
+                latitude: 30,
+                zoom: 8
+              }}
+              style={{ flexGrow: "inherit" }}
+              mapStyle={{
+                version: 8,
+                name,
+                sources: {
+                  base_map: {
+                    type: 'raster',
+                    tileSize: 256,
+                    tiles: ['https://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=e81d2c58360ac1527eb160fe214e21fe'],
+                  }
+                },
+                layers: [
+                  {
+                    id: 'base_map',
+                    source: 'base_map',
+                    type: 'raster'
+                  }
+                ],
+                zoom: 8,
+              }}
+            />
+          </div>
+        </main>
+        <div className="w-1/6 bg-gray-100 p-2">属性面板</div>
       </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+      <footer className="bg-gray-800 text-white p-2">状态栏</footer>
+    </div>
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
   );
 }
 
